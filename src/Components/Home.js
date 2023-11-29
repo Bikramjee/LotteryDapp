@@ -10,17 +10,29 @@ const Home = () => {
 
     useEffect(() => {
         const loadBlockchainData = async () => {
+            const handleAccountsChanged = (accounts) => {
+                if (accounts.length > 0) {
+                    setCurrentAccount(accounts[0]);
+                } else {
+                    setCurrentAccount(null); // No account found
+                }
+            };
+            
             if (typeof window.ethereum !== 'undefined') {
+                await window.ethereum.request({ method: 'eth_requestAccounts' });
+      
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 try {
                     const signer = provider.getSigner();
                     const address = await signer.getAddress();
-                    console.log(address);
+                    console.log(address,"tttttttt");
                     setCurrentAccount(address);
-                    window.ethereum.on('accountsChanged', (accounts) => {
-                        setCurrentAccount(accounts[0]);
-                        console.log(currentAccount);
-                    })
+                    window.ethereum.on('accountsChanged',handleAccountsChanged
+                    //  (accounts) => {
+                    //     setCurrentAccount(accounts[0]);
+                    //     console.log(currentAccount);
+                    // }
+                    )
                 } catch (err) {
                     console.error(err);
                 }
